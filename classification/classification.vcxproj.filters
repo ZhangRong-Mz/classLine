@@ -14,35 +14,4 @@
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
   </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\buffer_2d.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="..\CannyLine.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="..\MetaLine.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="..\QuickSort.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="..\types.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="..\buffer_2d.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="..\CannyLine.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="..\main.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="..\MetaLine.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-  </ItemGroup>
 </Project>
