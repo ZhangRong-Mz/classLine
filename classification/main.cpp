@@ -64,8 +64,28 @@ void pre(Mat &img)
 
 	cv::waitKey(0);
 }
-
-//bool equ()
+float haiLun(float x1, float y1, float x2, float y2, float x3, float y3)
+{
+	float S;
+	return S = float(1/2)*(x1*y2 + x2*y3 + x3*y1 - x1*y3 - x2*y1 - x3*y2);
+}
+bool equ(float x1, float y1, float x2, float y2,float x3,float y3)
+{
+	if ((x1 - x2) == 0 && (x1 - x3) == 0)
+		return 1;
+	else if (((y1 - y2) / (x1 - x2)) == ((y1 - y3) / (x1 - x3)))
+		return 1;
+	else
+		return 0;
+}
+float dist(float x1, float y1, float x2, float y2,float x3,float y3)
+{
+	float A, B, C;
+	A = y1 - y2;
+	B = x2 - x1;
+	C = x1*y2 - x2*y1;
+	return abs((A*x3 + B * y3 + C) / (sqrt(A*A + B * B)));
+}
 void main()
 {
 	string fileCur;
@@ -118,11 +138,20 @@ void main()
 	std::vector<std::vector<float> > lines2;
 	std::vector<std::vector<float> > ver;
 	std::vector<std::vector<float> > hor;
+	std::vector<std::vector<float> > longver;
+	std::vector<std::vector<float> > longhor;
+	std::vector<std::vector<float> > shortver;
+	std::vector<std::vector<float> > shorthor;
+	std::vector<std::vector<float> > templine;
+	std::vector<std::vector<float> > ::iterator it1;
+	std::vector<std::vector<float> > ::iterator it2;
 	detector2.cannyLine(imgShow, lines2);
 	printf("%d\n", lines2.size());
 	cv::Mat finalImg(imgShow.rows, imgShow.cols, CV_8UC3, cv::Scalar(255, 255, 255));
 	cv::Mat horImg(imgShow.rows, imgShow.cols, CV_8UC3, cv::Scalar(255, 255, 255));
 	cv::Mat verImg(imgShow.rows, imgShow.cols, CV_8UC3, cv::Scalar(255, 255, 255));
+	cv::Mat verhor(imgShow.rows, imgShow.cols, CV_8UC3, cv::Scalar(255, 255, 255));
+	cv::Mat tempImg(imgShow.rows, imgShow.cols, CV_8UC3, cv::Scalar(255, 255, 255));
 	float length = 0;
 	float mid = 0;
 	double   x1, x2, x, y1, y2, y;
@@ -180,35 +209,153 @@ void main()
 		//printf("!!!%f\n", length);
 		cv::line(finalImg, cv::Point(lines2[m][0], lines2[m][1]), cv::Point(lines2[m][2], lines2[m][3]), cv::Scalar(0, 0, 0), 1, CV_AA);
 	}
-	for (int m = 0; m < hor.size(); m++)
+	int numb1, numb2,numb11,numb22;
+	numb1 =numb2 =numb11=numb22= 0;
+	int m = 0;
+	int n = 0;
+	for (m = 0; m < hor.size(); m++)
 	{
+		lineTemp[0] = hor[m][0];
+		lineTemp[1] = hor[m][1];
+		lineTemp[2] = hor[m][2];
+		lineTemp[3] = hor[m][3];
+		if (sqrt((hor[m][0] - hor[m][2])*(hor[m][0] - hor[m][2]) + (hor[m][1] - hor[m][3])*(hor[m][1] - hor[m][3])) < 100)
+		{
+			shorthor.push_back(lineTemp);
+			continue;
+		}
+		longhor.push_back(lineTemp);
 		cv::line(horImg, cv::Point(hor[m][0], hor[m][1]), cv::Point(hor[m][2], hor[m][3]), cv::Scalar(0, 0, 0), 1, CV_AA);
+		cv::line(verhor, cv::Point(hor[m][0], hor[m][1]), cv::Point(hor[m][2], hor[m][3]), cv::Scalar(0, 0, 0), 1, CV_AA);
+		numb1++;
+		if (hor[m][1] <= hor[m][3])
+			numb11++;
 	}
-	for (int m = 0; m < ver.size(); m++)
+	for (m = 0; m < ver.size(); m++)
 	{
+		lineTemp[0] = ver[m][0];
+		lineTemp[1] = ver[m][1];
+		lineTemp[2] = ver[m][2];
+		lineTemp[3] = ver[m][3];
+		if (sqrt((ver[m][0] - ver[m][2])*(ver[m][0] - ver[m][2]) + (ver[m][1] - ver[m][3])*(ver[m][1] - ver[m][3])) < 50)
+		{
+			shortver.push_back(lineTemp);
+			continue;
+		}
+		longver.push_back(lineTemp);
 		cv::line(verImg, cv::Point(ver[m][0], ver[m][1]), cv::Point(ver[m][2], ver[m][3]), cv::Scalar(0, 0, 0), 1, CV_AA);
+		cv::line(verhor, cv::Point(ver[m][0], ver[m][1]), cv::Point(ver[m][2], ver[m][3]), cv::Scalar(0, 0, 0), 1, CV_AA);
+		numb2++;
+		if (ver[m][1]<= ver[m][3])
+			numb22++;
 	}
+	//第一次长平行线拟合
+	for (m = 0; m<longver.size();)
+	{
+		lineTemp[0] = longver[m][0];
+		lineTemp[1] = longver[m][1];
+		lineTemp[2] = longver[m][2];
+		lineTemp[3] = longver[m][3];
+		for (n = 0; n<longver.size();)
+		{
+			if (m == n)
+			{
+				n++;
+				continue;
+			}
+			if (dist(lineTemp[0], lineTemp[1], lineTemp[2], lineTemp[3], (longver[n][0] + longver[n][2]) / 2, (longver[n][1] + longver[n][3]) / 2)<10)
+			{
+				if (longver[n][0] < lineTemp[0])
+					lineTemp[0] = longver[n][0];
+				if (longver[n][1] < lineTemp[1])
+					lineTemp[1] = longver[n][1];
+				if (longver[n][2] < lineTemp[2])
+					lineTemp[2] = longver[n][2];
+				if (longver[n][3] > lineTemp[3])
+					lineTemp[3] = longver[n][3];
+				longver.erase(longver.begin() + n - 1); //删除longver[n]
+			}
+			else
+			{
+				n++;
+			}
+			printf("!!!!!!!!!!!!!!%d\n", longver.size());
+		}
+		templine.push_back(lineTemp);
+		longver.erase(longver.begin());     //删除longver[m]
+	}
+	for(m = 0; m < templine.size(); m++)
+	{
+		Mat* temp = new Mat(imgShow.rows, imgShow.cols, CV_8UC3, cv::Scalar(255, 255, 255));
+		cv::line(*temp, cv::Point(templine[m][0], templine[m][1]), cv::Point(templine[m][2], templine[m][3]), cv::Scalar(0, 0, 0), 1, CV_AA);
+		cv::line(tempImg, cv::Point(templine[m][0], templine[m][1]), cv::Point(templine[m][2], templine[m][3]), cv::Scalar(0, 0, 0), 1, CV_AA);
+		imwrite("C:\\Users\\Mz\\Desktop\\垂直线集合\\"+to_string(m) + "ver.png", *temp, compression_params);
+	}
+	namedWindow("templine", 2);
+	imshow("templine", tempImg);
+	imwrite(path + "templine.png", tempImg, compression_params);
+	//第一次长平行线拟合
+
+
+	printf("hor:%d %d,ver:%d %d\n", numb1, numb11, numb2, numb22);
 	namedWindow("hor", 2);
 	imshow("hor", horImg);
 	imwrite(path + "hor.png", horImg, compression_params);
 	namedWindow("ver", 2);
 	imshow("ver", verImg);
 	imwrite(path + "ver.png", verImg, compression_params);
-	for (int m = 0; m < lines2.size(); ++m)
+	namedWindow("verhor", 2);
+	imshow("verhor", verhor);
+	imwrite(path + "verhor.png", verhor, compression_params);
+	for (m = 0; m < longver.size(); m++)
 	{
-		for (int n = 0; n < lines2.size(); ++n)
-		{
-			if (m == n)
-				continue;
-			//x1 = (lines2[m][0] + lines2[m][2])/2; y1 = (lines2[m][1] + lines2[m][3])/2;
-			//x2 = (lines2[n][0] + lines2[n][2]) / 2; y2 = (lines2[n][1] + lines2[n][3]) / 2;
-			//mid = sqrt((x1 - x2)*(x1 - x2) + (y1 - y2)*(y1 - y2));
-			if (mid < 10)
-			{
 
-			}//飒飒的贺卡上德哈卡山东省
+	}
+	/*for (it1=ver.begin(),m=0; it1!= ver.end();it1++,m++)
+	{
+		lineTemp[0] = 9999;
+		lineTemp[1] = 9999;
+		lineTemp[2] =9999;
+		lineTemp[3] =9999;
+		for (it2 = ver.begin(),n=0; it2 != ver.end(); it2++,n++)
+		{
+			if (it1 == it2)
+				continue;
+			if (equ(it1[m][0], it1[m][1], it1[m][2], it1[m][3], it2[n][0], it2[n][1]))       //共线情况(隐藏共点)
+			{
+				if (equ(it1[m][0], it1[m][1], it1[m][2], it1[m][3], it2[n][2], it2[n][3]))   //四点共线
+				{
+					//ver.erase(it1);   这个操作放到最后来
+					ver.erase(it2);
+					if(it1[m][0]<=it2[n][0])
+					{ 
+						lineTemp[0] = it1[m][0];
+						lineTemp[1] = it1[m][1];
+					}					
+					else
+					{
+						lineTemp[0] = it2[m][0];
+						lineTemp[1] = it2[m][1];
+					}
+					if (it1[m][2] <= it2[n][2])
+					{
+						lineTemp[2] = it1[n][2];
+						lineTemp[3] = it1[n][3];
+					}
+					else
+					{
+						lineTemp[2] = it2[n][2];
+						lineTemp[3] = it2[n][3];
+					}
+				}
+				else  //三点共线
+				{
+
+				}
+			}
 		}
 	}
+	*/
 	namedWindow("final", 2);
 	imshow("final", finalImg);
 	imwrite(path + "final.png", finalImg, compression_params);

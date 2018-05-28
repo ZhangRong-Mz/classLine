@@ -6,22 +6,28 @@ h:\opencv\build\include\opencv2\core\utility.hpp : warning C4819: 该文件包�
 h:\opencv\build\include\opencv2\imgproc.hpp(591): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
 h:\课题代码\classification\classification\classification\main.cpp(26): warning C4477: “printf”: 格式字符串“%d”需要类型“int”的参数，但可变参数 1 拥有了类型“unsigned __int64”
   h:\课题代码\classification\classification\classification\main.cpp(26): note: 请考虑在格式字符串中使用“%zd”
-h:\课题代码\classification\classification\classification\main.cpp(70): warning C4326: “main”的返回类型应为“int”而非“void”
-h:\课题代码\classification\classification\classification\main.cpp(74): warning C4244: “参数”: 从“double”转换到“int”，可能丢失数据
-h:\课题代码\classification\classification\classification\main.cpp(88): warning C4244: “参数”: 从“float”转换到“int”，可能丢失数据
-h:\课题代码\classification\classification\classification\main.cpp(181): warning C4244: “参数”: 从“float”转换到“int”，可能丢失数据
-h:\课题代码\classification\classification\classification\main.cpp(185): warning C4244: “参数”: 从“float”转换到“int”，可能丢失数据
-h:\课题代码\classification\classification\classification\main.cpp(189): warning C4244: “参数”: 从“float”转换到“int”，可能丢失数据
-h:\课题代码\classification\classification\classification\main.cpp(85): warning C4477: “printf”: 格式字符串“%d”需要类型“int”的参数，但可变参数 1 拥有了类型“unsigned __int64”
-  h:\课题代码\classification\classification\classification\main.cpp(85): note: 请考虑在格式字符串中使用“%zd”
-h:\课题代码\classification\classification\classification\main.cpp(116): warning C4477: “printf”: 格式字符串“%d”需要类型“int”的参数，但可变参数 1 拥有了类型“unsigned __int64”
-  h:\课题代码\classification\classification\classification\main.cpp(116): note: 请考虑在格式字符串中使用“%zd”
-h:\课题代码\classification\classification\classification\main.cpp(122): warning C4477: “printf”: 格式字符串“%d”需要类型“int”的参数，但可变参数 1 拥有了类型“unsigned __int64”
-  h:\课题代码\classification\classification\classification\main.cpp(122): note: 请考虑在格式字符串中使用“%zd”
-h:\课题代码\classification\classification\classification\main.cpp(128): warning C4101: “y2”: 未引用的局部变量
-h:\课题代码\classification\classification\classification\main.cpp(128): warning C4101: “y1”: 未引用的局部变量
-h:\课题代码\classification\classification\classification\main.cpp(128): warning C4101: “x1”: 未引用的局部变量
-h:\课题代码\classification\classification\classification\main.cpp(128): warning C4101: “y”: 未引用的局部变量
-h:\课题代码\classification\classification\classification\main.cpp(128): warning C4101: “x”: 未引用的局部变量
-h:\课题代码\classification\classification\classification\main.cpp(128): warning C4101: “x2”: 未引用的局部变量
+h:\课题代码\classification\classification\classification\main.cpp(90): warning C4326: “main”的返回类型应为“int”而非“void”
+h:\课题代码\classification\classification\classification\main.cpp(94): warning C4244: “参数”: 从“double”转换到“int”，可能丢失数据
+h:\课题代码\classification\classification\classification\main.cpp(108): warning C4244: “参数”: 从“float”转换到“int”，可能丢失数据
+h:\课题代码\classification\classification\classification\main.cpp(210): warning C4244: “参数”: 从“float”转换到“int”，可能丢失数据
+h:\课题代码\classification\classification\classification\main.cpp(228): warning C4244: “参数”: 从“float”转换到“int”，可能丢失数据
+h:\课题代码\classification\classification\classification\main.cpp(229): warning C4244: “参数”: 从“float”转换到“int”，可能丢失数据
+h:\课题代码\classification\classification\classification\main.cpp(246): warning C4244: “参数”: 从“float”转换到“int”，可能丢失数据
+h:\课题代码\classification\classification\classification\main.cpp(247): warning C4244: “参数”: 从“float”转换到“int”，可能丢失数据
+h:\课题代码\classification\classification\classification\main.cpp(290): warning C4244: “参数”: 从“float”转换到“int”，可能丢失数据
+h:\课题代码\classification\classification\classification\main.cpp(291): warning C4244: “参数”: 从“float”转换到“int”，可能丢失数据
+h:\课题代码\classification\classification\classification\main.cpp(105): warning C4477: “printf”: 格式字符串“%d”需要类型“int”的参数，但可变参数 1 拥有了类型“unsigned __int64”
+  h:\课题代码\classification\classification\classification\main.cpp(105): note: 请考虑在格式字符串中使用“%zd”
+h:\课题代码\classification\classification\classification\main.cpp(136): warning C4477: “printf”: 格式字符串“%d”需要类型“int”的参数，但可变参数 1 拥有了类型“unsigned __int64”
+  h:\课题代码\classification\classification\classification\main.cpp(136): note: 请考虑在格式字符串中使用“%zd”
+h:\课题代码\classification\classification\classification\main.cpp(149): warning C4477: “printf”: 格式字符串“%d”需要类型“int”的参数，但可变参数 1 拥有了类型“unsigned __int64”
+  h:\课题代码\classification\classification\classification\main.cpp(149): note: 请考虑在格式字符串中使用“%zd”
+h:\课题代码\classification\classification\classification\main.cpp(282): warning C4477: “printf”: 格式字符串“%d”需要类型“int”的参数，但可变参数 1 拥有了类型“unsigned __int64”
+  h:\课题代码\classification\classification\classification\main.cpp(282): note: 请考虑在格式字符串中使用“%zd”
+h:\课题代码\classification\classification\classification\main.cpp(157): warning C4101: “y2”: 未引用的局部变量
+h:\课题代码\classification\classification\classification\main.cpp(157): warning C4101: “y1”: 未引用的局部变量
+h:\课题代码\classification\classification\classification\main.cpp(157): warning C4101: “x1”: 未引用的局部变量
+h:\课题代码\classification\classification\classification\main.cpp(157): warning C4101: “y”: 未引用的局部变量
+h:\课题代码\classification\classification\classification\main.cpp(157): warning C4101: “x”: 未引用的局部变量
+h:\课题代码\classification\classification\classification\main.cpp(157): warning C4101: “x2”: 未引用的局部变量
   classification.vcxproj -> H:\课题代码\classification\classification\x64\Debug\classification.exe
