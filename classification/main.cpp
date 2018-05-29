@@ -86,6 +86,84 @@ float dist(float x1, float y1, float x2, float y2,float x3,float y3)
 	C = x1*y2 - x2*y1;
 	return abs((A*x3 + B * y3 + C) / (sqrt(A*A + B * B)));
 }
+
+Mat VerticalProjection(Mat srcImage)//垂直积分投影  
+{
+	if (srcImage.channels() > 1)
+		cvtColor(srcImage, srcImage, CV_RGB2GRAY);
+	Mat srcImageBin;
+	threshold(srcImage, srcImageBin, 120, 255, CV_THRESH_BINARY_INV);
+	imshow("二值图", srcImageBin);
+	int *colswidth = new int[srcImage.cols];  //申请src.image.cols个int型的内存空间  
+	memset(colswidth, 0, srcImage.cols * 4);  //数组必须赋初值为零，否则出错。无法遍历数组。  
+											  //  memset(colheight,0,src->width*4);    
+											  // CvScalar value;   
+	int value;
+	for (int i = 0; i < srcImage.cols; i++)
+		for (int j = 0; j < srcImage.rows; j++)
+		{
+			//value=cvGet2D(src,j,i);  
+			value = srcImageBin.at<uchar>(j, i);
+			if (value == 255)
+			{
+				colswidth[i]++; //统计每列的白色像素点    
+			}
+		}
+	Mat histogramImage(srcImage.rows, srcImage.cols, CV_8UC1);
+	for (int i = 0; i < srcImage.rows; i++)
+		for (int j = 0; j < srcImage.cols; j++)
+		{
+			value = 255;  //背景设置为白色。   
+			histogramImage.at<uchar>(i, j) = value;
+		}
+	for (int i = 0; i < srcImage.cols; i++)
+		for (int j = 0; j < colswidth[i]; j++)
+		{
+			value = 0;  //直方图设置为黑色  
+			histogramImage.at<uchar>(srcImage.rows - 1 - j, i) = value;
+		}
+	imshow(" 垂直积分投影图", histogramImage);
+	return histogramImage;
+}
+Mat HorizonProjection(Mat srcImage)//水平积分投影  
+{
+	if (srcImage.channels() > 1)
+		cvtColor(srcImage, srcImage, CV_RGB2GRAY);
+	Mat srcImageBin;
+	threshold(srcImage, srcImageBin, 120, 255, CV_THRESH_BINARY_INV);
+	imshow("二值图", srcImageBin);
+	int *rowswidth = new int[srcImage.rows];  //申请src.image.rows个int型的内存空间  
+	memset(rowswidth, 0, srcImage.rows * 4);  //数组必须赋初值为零，否则出错。无法遍历数组。  
+	int value;
+	for (int i = 0; i<srcImage.rows; i++)
+		for (int j = 0; j<srcImage.cols; j++)
+		{
+			//value=cvGet2D(src,j,i);  
+			value = srcImageBin.at<uchar>(i, j);
+			if (value == 255)
+			{
+				rowswidth[i]++; //统计每行的白色像素点    
+			}
+		}
+	Mat histogramImage(srcImage.rows, srcImage.cols, CV_8UC1);
+	for (int i = 0; i<srcImage.rows; i++)
+		for (int j = 0; j<srcImage.cols; j++)
+		{
+			value = 255;  //背景设置为白色。   
+			histogramImage.at<uchar>(i, j) = value;
+		}
+	//imshow("d", histogramImage);  
+	for (int i = 0; i<srcImage.rows; i++)
+		for (int j = 0; j<rowswidth[i]; j++)
+		{
+			value = 0;  //直方图设置为黑色  
+			histogramImage.at<uchar>(i, j) = value;
+		}
+	imshow("水平积分投影图", histogramImage);
+	delete[] rowswidth;//释放前面申请的空间  
+	return histogramImage;
+
+}
 void main()
 {
 	string fileCur;
@@ -134,6 +212,9 @@ void main()
 	string path = "C:\\Users\\Mz\\Desktop\\";
 	imwrite(path + "test.png", fImg, compression_params);
 	printf("%d\n", contours.size());
+
+
+	//框线建模部分***************************************************************************框线建模部分
 	CannyLine detector2;
 	std::vector<std::vector<float> > lines2;
 	std::vector<std::vector<float> > ver;
@@ -152,6 +233,7 @@ void main()
 	cv::Mat verImg(imgShow.rows, imgShow.cols, CV_8UC3, cv::Scalar(255, 255, 255));
 	cv::Mat verhor(imgShow.rows, imgShow.cols, CV_8UC3, cv::Scalar(255, 255, 255));
 	cv::Mat tempImg(imgShow.rows, imgShow.cols, CV_8UC3, cv::Scalar(255, 255, 255));
+	cv::Mat tImg(imgShow.rows, imgShow.cols, CV_8UC3, cv::Scalar(255, 255, 255));
 	float length = 0;
 	float mid = 0;
 	double   x1, x2, x, y1, y2, y;
@@ -249,40 +331,104 @@ void main()
 		if (ver[m][1]<= ver[m][3])
 			numb22++;
 	}
-	//第一次长平行线拟合
+	for (m = 0; m < longver.size(); m++)
+	{
+		cv::line(tImg, cv::Point(longver[m][0], longver[m][1]), cv::Point(longver[m][2], longver[m][3]), cv::Scalar(0, 0, 0), 1, CV_AA);
+	}
+	namedWindow("t", 2);
+	imshow("t", tImg);
+	//第一次长垂直线拟合
 	for (m = 0; m<longver.size();)
 	{
-		lineTemp[0] = longver[m][0];
-		lineTemp[1] = longver[m][1];
-		lineTemp[2] = longver[m][2];
-		lineTemp[3] = longver[m][3];
-		for (n = 0; n<longver.size();)
+		if (longver[m][1] < longver[m][3])     //左边点在上
 		{
-			if (m == n)
+			lineTemp[0] = longver[m][0];     //最终拟合线，规定为左边点在上，右边点在下
+			lineTemp[1] = longver[m][1];
+			lineTemp[2] = longver[m][2];
+			lineTemp[3] = longver[m][3];
+			for (n = m+1; n<longver.size();)
 			{
-				n++;
-				continue;
+				if (dist(lineTemp[0], lineTemp[1], lineTemp[2], lineTemp[3], (longver[n][0] + longver[n][2]) / 2, (longver[n][1] + longver[n][3]) / 2)<5)
+				{
+					if (longver[n][1] < longver[n][3])   //左边点在上
+					{
+						if (longver[n][0] < lineTemp[0])
+							lineTemp[0] = longver[n][0];
+						if (longver[n][1] < lineTemp[1])
+							lineTemp[1] = longver[n][1];
+						if (longver[n][2] < lineTemp[2])
+							lineTemp[2] = longver[n][2];
+						if (longver[n][3] > lineTemp[3])
+							lineTemp[3] = longver[n][3];
+					}
+					else   //左边点在下
+					{
+						if (longver[n][0] < lineTemp[0])
+							lineTemp[0] = longver[n][0];
+						if (longver[n][3] < lineTemp[1])
+							lineTemp[1] = longver[n][3];
+						if (longver[n][2] < lineTemp[2])
+							lineTemp[2] = longver[n][2];
+						if (longver[n][1] > lineTemp[3])
+							lineTemp[3] = longver[n][1];
+					}
+					longver.erase(longver.begin() + n - 1); //删除longver[n]
+				}
+				else
+				{
+					n++;    //不需要拟合，直接跳过
+				}
 			}
-			if (dist(lineTemp[0], lineTemp[1], lineTemp[2], lineTemp[3], (longver[n][0] + longver[n][2]) / 2, (longver[n][1] + longver[n][3]) / 2)<10)
-			{
-				if (longver[n][0] < lineTemp[0])
-					lineTemp[0] = longver[n][0];
-				if (longver[n][1] < lineTemp[1])
-					lineTemp[1] = longver[n][1];
-				if (longver[n][2] < lineTemp[2])
-					lineTemp[2] = longver[n][2];
-				if (longver[n][3] > lineTemp[3])
-					lineTemp[3] = longver[n][3];
-				longver.erase(longver.begin() + n - 1); //删除longver[n]
-			}
-			else
-			{
-				n++;
-			}
-			printf("!!!!!!!!!!!!!!%d\n", longver.size());
+			templine.push_back(lineTemp);
+			longver.erase(longver.begin());     //删除longver[m]
 		}
-		templine.push_back(lineTemp);
-		longver.erase(longver.begin());     //删除longver[m]
+		else  //左边点在下
+		{
+			lineTemp[0] = longver[m][0];
+			lineTemp[1] = longver[m][3];
+			lineTemp[2] = longver[m][2];
+			lineTemp[3] = longver[m][1];
+			for (n = 0; n<longver.size();)
+			{
+				if (m == n)
+				{
+					n++;
+					continue;
+				}
+				if (dist(lineTemp[0], lineTemp[1], lineTemp[2], lineTemp[3], (longver[n][0] + longver[n][2]) / 2, (longver[n][1] + longver[n][3]) / 2)<10)
+				{
+					if (longver[n][1] < longver[n][3])   //左边点在上
+					{
+						if (longver[n][0] < lineTemp[0])
+							lineTemp[0] = longver[n][0];
+						if (longver[n][1] < lineTemp[1])
+							lineTemp[1] = longver[n][1];
+						if (longver[n][2] < lineTemp[2])
+							lineTemp[2] = longver[n][2];
+						if (longver[n][3] > lineTemp[3])
+							lineTemp[3] = longver[n][3];
+					}
+					else   //左边点在下
+					{
+						if (longver[n][0] < lineTemp[0])
+							lineTemp[0] = longver[n][0];
+						if (longver[n][3] < lineTemp[1])
+							lineTemp[1] = longver[n][3];
+						if (longver[n][2] < lineTemp[2])
+							lineTemp[2] = longver[n][2];
+						if (longver[n][1] > lineTemp[3])
+							lineTemp[3] = longver[n][1];
+					}
+					longver.erase(longver.begin() + n - 1); //删除longver[n]
+				}
+				else
+				{
+					n++;
+				}
+			}
+			templine.push_back(lineTemp);
+			longver.erase(longver.begin());     //删除longver[m]
+		}
 	}
 	for(m = 0; m < templine.size(); m++)
 	{
@@ -298,6 +444,7 @@ void main()
 
 
 	printf("hor:%d %d,ver:%d %d\n", numb1, numb11, numb2, numb22);
+	printf("templine：%d\n", templine.size());
 	namedWindow("hor", 2);
 	imshow("hor", horImg);
 	imwrite(path + "hor.png", horImg, compression_params);
