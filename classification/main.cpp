@@ -84,20 +84,18 @@ float dist(float x1, float y1, float x2, float y2,float x3,float y3)
 	A = y1 - y2;
 	B = x2 - x1;
 	C = x1*y2 - x2*y1;
-	return abs((A*x3 + B * y3 + C) / (sqrt(A*A + B * B)));
+	return (abs(A*x3 + B * y3 + C) / (sqrt(A*A + B * B)));
 }
 
-Mat VerticalProjection(Mat srcImage)//垂直积分投影  
+Mat VerticalProjection(Mat srcImage,int *&colsBlack)//垂直积分投影  
 {
 	if (srcImage.channels() > 1)
 		cvtColor(srcImage, srcImage, CV_RGB2GRAY);
 	Mat srcImageBin;
-	threshold(srcImage, srcImageBin, 120, 255, CV_THRESH_BINARY_INV);
-	imshow("二值图", srcImageBin);
 	int *colswidth = new int[srcImage.cols];  //申请src.image.cols个int型的内存空间  
 	memset(colswidth, 0, srcImage.cols * 4);  //数组必须赋初值为零，否则出错。无法遍历数组。  
-											  //  memset(colheight,0,src->width*4);    
-											  // CvScalar value;   
+	threshold(srcImage, srcImageBin, 120, 255, CV_THRESH_BINARY_INV);
+	imshow("二值图", srcImageBin); 
 	int value;
 	for (int i = 0; i < srcImage.cols; i++)
 		for (int j = 0; j < srcImage.rows; j++)
@@ -107,6 +105,10 @@ Mat VerticalProjection(Mat srcImage)//垂直积分投影
 			if (value == 255)
 			{
 				colswidth[i]++; //统计每列的白色像素点    
+			}
+			else
+			{
+				colsBlack[i]++;//统计每列的黑色像素点
 			}
 		}
 	Mat histogramImage(srcImage.rows, srcImage.cols, CV_8UC1);
@@ -122,18 +124,19 @@ Mat VerticalProjection(Mat srcImage)//垂直积分投影
 			value = 0;  //直方图设置为黑色  
 			histogramImage.at<uchar>(srcImage.rows - 1 - j, i) = value;
 		}
-	imshow(" 垂直积分投影图", histogramImage);
+	namedWindow("垂直积分投影图", 2);
+	imshow("垂直积分投影图", histogramImage);
 	return histogramImage;
-}
-Mat HorizonProjection(Mat srcImage)//水平积分投影  
+}	
+Mat HorizonProjection(Mat srcImage,int *rowsBlack)//水平积分投影  
 {
 	if (srcImage.channels() > 1)
 		cvtColor(srcImage, srcImage, CV_RGB2GRAY);
 	Mat srcImageBin;
+	int *rowswidth = new int[srcImage.rows];  //申请src.image.rows个int型的内存空间  
+	memset(rowswidth, 0, srcImage.rows * 4);  //数组必须赋初值为零，否则出错。无法遍历数组。 
 	threshold(srcImage, srcImageBin, 120, 255, CV_THRESH_BINARY_INV);
 	imshow("二值图", srcImageBin);
-	int *rowswidth = new int[srcImage.rows];  //申请src.image.rows个int型的内存空间  
-	memset(rowswidth, 0, srcImage.rows * 4);  //数组必须赋初值为零，否则出错。无法遍历数组。  
 	int value;
 	for (int i = 0; i<srcImage.rows; i++)
 		for (int j = 0; j<srcImage.cols; j++)
@@ -143,6 +146,10 @@ Mat HorizonProjection(Mat srcImage)//水平积分投影
 			if (value == 255)
 			{
 				rowswidth[i]++; //统计每行的白色像素点    
+			}
+			else
+			{
+				rowsBlack[i]++;
 			}
 		}
 	Mat histogramImage(srcImage.rows, srcImage.cols, CV_8UC1);
@@ -159,10 +166,49 @@ Mat HorizonProjection(Mat srcImage)//水平积分投影
 			value = 0;  //直方图设置为黑色  
 			histogramImage.at<uchar>(i, j) = value;
 		}
+	namedWindow("水平积分投影图", 2);
 	imshow("水平积分投影图", histogramImage);
 	delete[] rowswidth;//释放前面申请的空间  
 	return histogramImage;
 
+}
+bool isVerWhite(float y1,  float y2, float y3,  float y4,int *&p)
+{
+	bool flag = 0;
+	int p1,p2,p3,p4;
+	if (y1 < y2)
+	{
+		p1 = y1;
+		p2 = y2;
+	}
+	else
+	{
+		p1 = y2;
+		p2 = y1;
+	}
+	if (y3 < y4)
+	{
+		p3 = y3;
+		p4 = y4;
+	}
+	else
+	{
+		p3 = y4;
+		p4 = y3;
+	}
+	if (p1 > p3&&p1 > p4)
+		flag = 1;
+	if (p2 < p3&&p2 < p4)
+		flag = 1;
+	return flag;
+}
+bool isHorWhite(float x1,float x2, float x3, float x4)
+{
+	if (x1 > x4)
+		return 1;
+	if (x2 < x3)
+		return 1;
+	return 0;
 }
 void main()
 {
@@ -195,8 +241,8 @@ void main()
 	findContours(imgShow, contours, hierarchy, CV_RETR_CCOMP, CV_CHAIN_APPROX_NONE);
 	cv::Mat fImg(imgShow.rows, imgShow.cols, CV_8UC3, cv::Scalar(255, 255, 255));
 	//drawContours(fImg, contours, -1, Scalar(0, 0, 0));
-	int index = 0;
-	for (; index >= 0; index = hierarchy[index][0])
+	/*int index = 0;
+	for (; index >= 0; index = hierarchy[index][0])	
 	{
 		cv::Scalar color(rand() & 255, rand() & 255, rand() & 255);
 		//cv::drawContours(fImg, contours, index, Scalar(0), 1, 8, hierarchy);//描绘字符的外轮廓  
@@ -205,7 +251,7 @@ void main()
 		rectangle(fImg, rect, Scalar(0, 0, 255), 3);//对外轮廓加矩形框
 	}
 	namedWindow("ff", 2);
-	imshow("ff", fImg);
+	imshow("ff", fImg);*/
 	vector<int> compression_params;
 	compression_params.push_back(CV_IMWRITE_PNG_COMPRESSION); //PNG格式图片的压缩级别  
 	compression_params.push_back(9);  //这里设置保存的图像质量级别
@@ -234,6 +280,12 @@ void main()
 	cv::Mat verhor(imgShow.rows, imgShow.cols, CV_8UC3, cv::Scalar(255, 255, 255));
 	cv::Mat tempImg(imgShow.rows, imgShow.cols, CV_8UC3, cv::Scalar(255, 255, 255));
 	cv::Mat tImg(imgShow.rows, imgShow.cols, CV_8UC3, cv::Scalar(255, 255, 255));
+	int *colsBlack = new int[imgShow.cols];  //申请src.image.cols个int型的内存空间  
+	memset(colsBlack, 0, imgShow.cols * 4);  //数组必须赋初值为零，否则出错。无法遍历数组。  
+											  //  memset(colheight,0,src->width*4);    
+											  // CvScalar value;  
+	int *rowsBlack = new int[imgShow.rows];  //申请src.image.rows个int型的内存空间  
+	memset(rowsBlack, 0, imgShow.rows * 4);  //数组必须赋初值为零，否则出错。无法遍历数组。  
 	float length = 0;
 	float mid = 0;
 	double   x1, x2, x, y1, y2, y;
@@ -291,6 +343,11 @@ void main()
 		//printf("!!!%f\n", length);
 		cv::line(finalImg, cv::Point(lines2[m][0], lines2[m][1]), cv::Point(lines2[m][2], lines2[m][3]), cv::Scalar(0, 0, 0), 1, CV_AA);
 	}
+	//投影
+	HorizonProjection(finalImg, rowsBlack);
+	VerticalProjection(finalImg, colsBlack);
+
+
 	int numb1, numb2,numb11,numb22;
 	numb1 =numb2 =numb11=numb22= 0;
 	int m = 0;
@@ -342,13 +399,13 @@ void main()
 	{
 		if (longver[m][1] < longver[m][3])     //左边点在上
 		{
-			lineTemp[0] = longver[m][0];     //最终拟合线，规定为左边点在上，右边点在下
+			lineTemp[0] = longver[m][0];     //记录线边界
 			lineTemp[1] = longver[m][1];
 			lineTemp[2] = longver[m][2];
 			lineTemp[3] = longver[m][3];
 			for (n = m+1; n<longver.size();)
 			{
-				if (dist(lineTemp[0], lineTemp[1], lineTemp[2], lineTemp[3], (longver[n][0] + longver[n][2]) / 2, (longver[n][1] + longver[n][3]) / 2)<5)
+				if (dist(longver[m][0], longver[m][1], longver[m][2], longver[m][3], (longver[n][0] + longver[n][2]) / 2, (longver[n][1] + longver[n][3]) / 2)<20&&!isVerWhite(lineTemp[1], lineTemp[3],longver[n][1], longver[n][3],rowsBlack))
 				{
 					if (longver[n][1] < longver[n][3])   //左边点在上
 					{
@@ -372,7 +429,7 @@ void main()
 						if (longver[n][1] > lineTemp[3])
 							lineTemp[3] = longver[n][1];
 					}
-					longver.erase(longver.begin() + n - 1); //删除longver[n]
+					longver.erase(longver.begin() + n ); //删除longver[n]
 				}
 				else
 				{
@@ -388,14 +445,9 @@ void main()
 			lineTemp[1] = longver[m][3];
 			lineTemp[2] = longver[m][2];
 			lineTemp[3] = longver[m][1];
-			for (n = 0; n<longver.size();)
+			for (n = m+1; n<longver.size();)
 			{
-				if (m == n)
-				{
-					n++;
-					continue;
-				}
-				if (dist(lineTemp[0], lineTemp[1], lineTemp[2], lineTemp[3], (longver[n][0] + longver[n][2]) / 2, (longver[n][1] + longver[n][3]) / 2)<10)
+				if (dist(longver[m][0], longver[m][1], longver[m][2], longver[m][3], (longver[n][0] + longver[n][2]) / 2, (longver[n][1] + longver[n][3]) / 2)<20&&!isVerWhite(lineTemp[1], lineTemp[3], longver[n][1], longver[n][3], rowsBlack))
 				{
 					if (longver[n][1] < longver[n][3])   //左边点在上
 					{
@@ -419,7 +471,7 @@ void main()
 						if (longver[n][1] > lineTemp[3])
 							lineTemp[3] = longver[n][1];
 					}
-					longver.erase(longver.begin() + n - 1); //删除longver[n]
+					longver.erase(longver.begin() + n); //删除longver[n]
 				}
 				else
 				{
