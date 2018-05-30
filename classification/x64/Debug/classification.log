@@ -21,17 +21,17 @@ h:\课题代码\classification\classification\classification\main.cpp(382): warn
 h:\课题代码\classification\classification\classification\main.cpp(399): warning C4244: “参数”: 从“float”转换到“int”，可能丢失数据
 h:\课题代码\classification\classification\classification\main.cpp(400): warning C4244: “参数”: 从“float”转换到“int”，可能丢失数据
 h:\课题代码\classification\classification\classification\main.cpp(407): warning C4244: “参数”: 从“float”转换到“int”，可能丢失数据
-h:\课题代码\classification\classification\classification\main.cpp(654): warning C4244: “参数”: 从“float”转换到“int”，可能丢失数据
-h:\课题代码\classification\classification\classification\main.cpp(665): warning C4244: “参数”: 从“float”转换到“int”，可能丢失数据
-h:\课题代码\classification\classification\classification\main.cpp(676): warning C4244: “参数”: 从“float”转换到“int”，可能丢失数据
+h:\课题代码\classification\classification\classification\main.cpp(656): warning C4244: “参数”: 从“float”转换到“int”，可能丢失数据
+h:\课题代码\classification\classification\classification\main.cpp(667): warning C4244: “参数”: 从“float”转换到“int”，可能丢失数据
+h:\课题代码\classification\classification\classification\main.cpp(678): warning C4244: “参数”: 从“float”转换到“int”，可能丢失数据
 h:\课题代码\classification\classification\classification\main.cpp(244): warning C4477: “printf”: 格式字符串“%d”需要类型“int”的参数，但可变参数 1 拥有了类型“unsigned __int64”
   h:\课题代码\classification\classification\classification\main.cpp(244): note: 请考虑在格式字符串中使用“%zd”
 h:\课题代码\classification\classification\classification\main.cpp(272): warning C4477: “printf”: 格式字符串“%d”需要类型“int”的参数，但可变参数 1 拥有了类型“unsigned __int64”
   h:\课题代码\classification\classification\classification\main.cpp(272): note: 请考虑在格式字符串中使用“%zd”
 h:\课题代码\classification\classification\classification\main.cpp(289): warning C4477: “printf”: 格式字符串“%d”需要类型“int”的参数，但可变参数 1 拥有了类型“unsigned __int64”
   h:\课题代码\classification\classification\classification\main.cpp(289): note: 请考虑在格式字符串中使用“%zd”
-h:\课题代码\classification\classification\classification\main.cpp(687): warning C4477: “printf”: 格式字符串“%d”需要类型“int”的参数，但可变参数 1 拥有了类型“unsigned __int64”
-  h:\课题代码\classification\classification\classification\main.cpp(687): note: 请考虑在格式字符串中使用“%zd”
+h:\课题代码\classification\classification\classification\main.cpp(689): warning C4477: “printf”: 格式字符串“%d”需要类型“int”的参数，但可变参数 1 拥有了类型“unsigned __int64”
+  h:\课题代码\classification\classification\classification\main.cpp(689): note: 请考虑在格式字符串中使用“%zd”
 h:\课题代码\classification\classification\classification\main.cpp(305): warning C4101: “y2”: 未引用的局部变量
 h:\课题代码\classification\classification\classification\main.cpp(305): warning C4101: “y1”: 未引用的局部变量
 h:\课题代码\classification\classification\classification\main.cpp(305): warning C4101: “x1”: 未引用的局部变量

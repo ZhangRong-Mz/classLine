@@ -540,10 +540,20 @@ void main()
 			{
 				if ((dist(shortver[m][0], shortver[m][1], shortver[m][2], shortver[m][3], (shortver[n][0] + shortver[n][2]) / 2, (shortver[n][1] + shortver[n][3]) / 2)<20) && !isVerWhite(lineTemp[1], lineTemp[3], shortver[n][1], shortver[n][3], rowsBlack))
 				{
-					if (shortver[n][0] < (img.cols / 2))
-					{
+					//if (shortver[n][0] < (img.cols / 2))
+					//{
 						if (shortver[n][1] < shortver[n][3])   //左边点在上
 						{
+							if (lineTemp[0] > shortver[n][3])
+							{
+								if (abs(lineTemp[0] - shortver[n][3]) > 20)
+									continue;
+							}
+							if (lineTemp[3] < shortver[n][1])
+							{
+								if (abs(lineTemp[3] - shortver[n][1]) > 20)
+									continue;
+							}
 							if (shortver[n][0] < lineTemp[0])
 								lineTemp[0] = shortver[n][0];
 							if (shortver[n][1] < lineTemp[1])
@@ -555,6 +565,16 @@ void main()
 						}
 						else   //左边点在下
 						{
+							if (lineTemp[0] > shortver[n][1])
+							{
+								if (abs(lineTemp[0] - shortver[n][1]) > 20)
+									continue;
+							}
+							if (lineTemp[3] < shortver[n][3])
+							{
+								if (abs(lineTemp[3] - shortver[n][3]) > 20)
+									continue;
+							}
 							if (shortver[n][0] < lineTemp[0])
 								lineTemp[0] = shortver[n][0];
 							if (shortver[n][3] < lineTemp[1])
@@ -565,8 +585,8 @@ void main()
 								lineTemp[3] = shortver[n][1];
 						}
 						shortver.erase(shortver.begin() + n); //删除longver[n]
-					}
-					else
+					//}
+					/*else
 					{
 						if (shortver[n][1] < shortver[n][3])   //左边点在上
 						{
@@ -591,7 +611,7 @@ void main()
 								lineTemp[3] = shortver[n][1];
 						}
 						shortver.erase(shortver.begin() + n); //删除longver[n]
-					}
+					}*/
 				}
 				else
 				{
