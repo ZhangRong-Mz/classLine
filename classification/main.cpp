@@ -261,6 +261,7 @@ void main()
 	{
 	cv::Scalar color(rand() & 255, rand() & 255, rand() & 255);
 	//cv::drawContours(fImg, contours, index, Scalar(0), 1, 8, hierarchy);//描绘字符的外轮廓
+
 	Rect rect = boundingRect(contours[index]);//检测外轮廓
 	rectangle(fImg, rect, Scalar(0, 0, 255), 3);//对外轮廓加矩形框
 	}
@@ -280,8 +281,9 @@ void main()
 	std::vector<std::vector<float> > longhor;
 	std::vector<std::vector<float> > shortver;
 	std::vector<std::vector<float> > shorthor;
-	std::vector<std::vector<float> > longline;
-	std::vector<std::vector<float> > shortline;
+	std::vector<std::vector<float> > longverline;
+	std::vector<std::vector<float> > shortverline;
+	std::vector<std::vector<float> > longshortverline;
 	std::vector<std::vector<float> > ::iterator it1;
 	std::vector<std::vector<float> > ::iterator it2;
 	detector2.cannyLine(imgShow, lines2);
@@ -290,10 +292,10 @@ void main()
 	cv::Mat horImg(imgShow.rows, imgShow.cols, CV_8UC3, cv::Scalar(255, 255, 255));
 	cv::Mat verImg(imgShow.rows, imgShow.cols, CV_8UC3, cv::Scalar(255, 255, 255));
 	cv::Mat verhor(imgShow.rows, imgShow.cols, CV_8UC3, cv::Scalar(255, 255, 255));
-	cv::Mat longlineimg(imgShow.rows, imgShow.cols, CV_8UC3, cv::Scalar(255, 255, 255));
-	cv::Mat shortlineimg(imgShow.rows, imgShow.cols, CV_8UC3, cv::Scalar(255, 255, 255));
+	cv::Mat longverlineimg(imgShow.rows, imgShow.cols, CV_8UC3, cv::Scalar(255, 255, 255));
+	cv::Mat shortverlineimg(imgShow.rows, imgShow.cols, CV_8UC3, cv::Scalar(255, 255, 255));
+	cv::Mat longshortverlineimg(imgShow.rows, imgShow.cols, CV_8UC3, cv::Scalar(255, 255, 255));
 	cv::Mat tImg(imgShow.rows, imgShow.cols, CV_8UC3, cv::Scalar(255, 255, 255));
-	cv::Mat shortlineO(imgShow.rows, imgShow.cols, CV_8UC3, cv::Scalar(255, 255, 255));
 	int *colsBlack = new int[imgShow.cols];  //申请src.image.cols个int型的内存空间  
 	memset(colsBlack, 0, imgShow.cols * 4);  //数组必须赋初值为零，否则出错。无法遍历数组。  
 											 //  memset(colheight,0,src->width*4);    
@@ -408,6 +410,8 @@ void main()
 	}
 	namedWindow("t", 2);
 	imshow("t", tImg);
+
+
 	//第一次长垂直线拟合**********************************************
 	for (m = 0; m<longver.size();)
 	{
@@ -479,7 +483,7 @@ void main()
 					n++;    //不需要拟合，直接跳过
 				}
 			}
-			longline.push_back(lineTemp);
+			longverline.push_back(lineTemp);
 			longver.erase(longver.begin());     //删除longver[m]
 		}
 		else  //左边点在下
@@ -521,7 +525,7 @@ void main()
 					n++;
 				}
 			}
-			longline.push_back(lineTemp);
+			longverline.push_back(lineTemp);
 			longver.erase(longver.begin());     //删除longver[m]
 		}
 	}
@@ -540,68 +544,69 @@ void main()
 			{
 				if ((dist(shortver[m][0], shortver[m][1], shortver[m][2], shortver[m][3], (shortver[n][0] + shortver[n][2]) / 2, (shortver[n][1] + shortver[n][3]) / 2)<20) && !isVerWhite(lineTemp[1], lineTemp[3], shortver[n][1], shortver[n][3], rowsBlack))
 				{
-						if (shortver[n][1] < shortver[n][3])   //左边点在上
+					if (shortver[n][1] < shortver[n][3])   //左边点在上
+					{
+
+						if (lineTemp[1] > shortver[n][3])
 						{
-							if (lineTemp[0] > shortver[n][3])
+							if (abs(lineTemp[1] - shortver[n][3]) > 10)
 							{
-								if (abs(lineTemp[0] - shortver[n][3]) > 10)
-								{
-									n++;
-									continue;
-								}
+								n++;
+								continue;
 							}
-							if (lineTemp[3] < shortver[n][1])
-							{
-								if (abs(lineTemp[3] - shortver[n][1]) > 10)
-								{
-									n++;
-									continue;
-								}
-							}
-							if (shortver[n][0] < lineTemp[0])
-								lineTemp[0] = shortver[n][0];
-							if (shortver[n][1] < lineTemp[1])
-								lineTemp[1] = shortver[n][1];
-							if (shortver[n][2] < lineTemp[2])
-								lineTemp[2] = shortver[n][2];
-							if (shortver[n][3] > lineTemp[3])
-								lineTemp[3] = shortver[n][3];
 						}
-						else   //左边点在下
+						if (lineTemp[3] < shortver[n][1])
 						{
-							if (lineTemp[0] > shortver[n][1])
+							if (abs(lineTemp[3] - shortver[n][1]) > 10)
 							{
-								if (abs(lineTemp[0] - shortver[n][1]) > 10)
-								{
-									n++;
-									continue;
-								}
+								n++;
+								continue;
 							}
-							if (lineTemp[3] < shortver[n][3])
-							{
-								if (abs(lineTemp[3] - shortver[n][3]) > 10)
-								{
-									n++;
-									continue;
-								}
-							}
-							if (shortver[n][0] < lineTemp[0])
-								lineTemp[0] = shortver[n][0];
-							if (shortver[n][3] < lineTemp[1])
-								lineTemp[1] = shortver[n][3];
-							if (shortver[n][2] < lineTemp[2])
-								lineTemp[2] = shortver[n][2];
-							if (shortver[n][1] > lineTemp[3])
-								lineTemp[3] = shortver[n][1];
 						}
-						shortver.erase(shortver.begin() + n); //删除longver[n]
+						if (shortver[n][0] < lineTemp[0])
+							lineTemp[0] = shortver[n][0];
+						if (shortver[n][1] < lineTemp[1])
+							lineTemp[1] = shortver[n][1];
+						if (shortver[n][2] < lineTemp[2])
+							lineTemp[2] = shortver[n][2];
+						if (shortver[n][3] > lineTemp[3])
+							lineTemp[3] = shortver[n][3];
+					}
+					else   //左边点在下
+					{
+						if (lineTemp[1] > shortver[n][1])
+						{
+							if (abs(lineTemp[1] - shortver[n][1]) > 20)
+							{
+								n++;
+								continue;
+							}
+						}
+						if (lineTemp[3] < shortver[n][3])
+						{
+							if (abs(lineTemp[3] - shortver[n][3]) > 20)
+							{
+								n++;
+								continue;
+							}
+						}
+						if (shortver[n][0] < lineTemp[0])
+							lineTemp[0] = shortver[n][0];
+						if (shortver[n][3] < lineTemp[1])
+							lineTemp[1] = shortver[n][3];
+						if (shortver[n][2] < lineTemp[2])
+							lineTemp[2] = shortver[n][2];
+						if (shortver[n][1] > lineTemp[3])
+							lineTemp[3] = shortver[n][1];
+					}
+					shortver.erase(shortver.begin() + n); //删除longver[n]
 				}
 				else
 				{
 					n++;    //不需要拟合，直接跳过
 				}
 			}
-			shortline.push_back(lineTemp);
+			shortverline.push_back(lineTemp);
 			shortver.erase(shortver.begin());     //删除longver[m]
 		}
 		else  //左边点在下
@@ -616,6 +621,22 @@ void main()
 				{
 					if (shortver[n][1] < shortver[n][3])   //左边点在上
 					{
+						if (lineTemp[1] > shortver[n][3])
+						{
+							if (abs(lineTemp[1] - shortver[n][3]) > 20)
+							{
+								n++;
+								continue;
+							}
+						}
+						if (lineTemp[3] < shortver[n][1])
+						{
+							if (abs(lineTemp[3] - shortver[n][1]) > 20)
+							{
+								n++;
+								continue;
+							}
+						}
 						if (shortver[n][0] < lineTemp[0])
 							lineTemp[0] = shortver[n][0];
 						if (shortver[n][1] < lineTemp[1])
@@ -627,6 +648,22 @@ void main()
 					}
 					else   //左边点在下
 					{
+						if (lineTemp[1] > shortver[n][1])
+						{
+							if (abs(lineTemp[1] - shortver[n][1]) > 20)
+							{
+								n++;
+								continue;
+							}
+						}
+						if (lineTemp[3] < shortver[n][3])
+						{
+							if (abs(lineTemp[3] - shortver[n][3]) > 20)
+							{
+								n++;
+								continue;
+							}
+						}
 						if (shortver[n][0] < lineTemp[0])
 							lineTemp[0] = shortver[n][0];
 						if (shortver[n][3] < lineTemp[1])
@@ -643,51 +680,216 @@ void main()
 					n++;
 				}
 			}
-			shortline.push_back(lineTemp);
+			shortverline.push_back(lineTemp);
 			shortver.erase(shortver.begin());     //删除longver[m]
 		}
 	}
 	//第一次短垂直线拟合**********************************************
 
 	//打印长垂线
-	for (m = 0; m < longline.size(); m++)
+	for (m = 0; m < longverline.size(); m++)
 	{
 		//Mat* temp = new Mat(imgShow.rows, imgShow.cols, CV_8UC3, cv::Scalar(255, 255, 255));
-		//cv::line(*temp, cv::Point(longline[m][0], longline[m][1]), cv::Point(longline[m][2], longline[m][3]), cv::Scalar(0, 0, 0), 1, CV_AA);
-		cv::line(longlineimg, cv::Point(longline[m][0], longline[m][1]), cv::Point(longline[m][2], longline[m][3]), cv::Scalar(0, 0, 0), 1, CV_AA);
+		//cv::line(*temp, cv::Point(longverline[m][0], longverline[m][1]), cv::Point(longverline[m][2], longverline[m][3]), cv::Scalar(0, 0, 0), 1, CV_AA);
+		cv::line(longverlineimg, cv::Point(longverline[m][0], longverline[m][1]), cv::Point(longverline[m][2], longverline[m][3]), cv::Scalar(0, 0, 0), 1, CV_AA);
 		//imwrite("C:\\Users\\Mz\\Desktop\\垂直线集合\\"+to_string(m) + "ver.png", *temp, compression_params);
 	}
-	namedWindow("longline", 2);
-	imshow("longline", longlineimg);
-	imwrite(path + "longline.png", longlineimg, compression_params);
+	namedWindow("longverline", 2);
+	imshow("longverline", longverlineimg);
+	imwrite(path + "longverline.png", longverlineimg, compression_params);
 	//打印短垂线
-	for (m = 0; m < shortline.size(); m++)
+	for (m = 0; m < shortverline.size(); m++)
 	{
 		//Mat* temp = new Mat(imgShow.rows, imgShow.cols, CV_8UC3, cv::Scalar(255, 255, 255));
-		//cv::line(*temp, cv::Point(longline[m][0], longline[m][1]), cv::Point(longline[m][2], longline[m][3]), cv::Scalar(0, 0, 0), 1, CV_AA);
-		cv::line(shortlineimg, cv::Point(shortline[m][0], shortline[m][1]), cv::Point(shortline[m][2], shortline[m][3]), cv::Scalar(0, 0, 0), 1, CV_AA);
+		//cv::line(*temp, cv::Point(longverline[m][0], longverline[m][1]), cv::Point(longverline[m][2], longverline[m][3]), cv::Scalar(0, 0, 0), 1, CV_AA);
+		cv::line(shortverlineimg, cv::Point(shortverline[m][0], shortverline[m][1]), cv::Point(shortverline[m][2], shortverline[m][3]), cv::Scalar(0, 0, 0), 1, CV_AA);
 		//imwrite("C:\\Users\\Mz\\Desktop\\垂直线集合\\"+to_string(m) + "ver.png", *temp, compression_params);
 	}
-	namedWindow("shortline", 2);
-	imshow("shortline", shortlineimg);
-	imwrite(path + "shortline.png", shortlineimg, compression_params);
+	namedWindow("shortverline", 2);
+	imshow("shortverline", shortverlineimg);
+	imwrite(path + "shortverline.png", shortverlineimg, compression_params);
+
+
+	//第一次长和短垂直线拟合**********************************************
+	for (m = 0; m<longverline.size();)
+	{
+		if (longverline[m][1] <= longverline[m][3])     //左边点在上
+		{
+			lineTemp[0] = longverline[m][0];     //记录线边界
+			lineTemp[1] = longverline[m][1];
+			lineTemp[2] = longverline[m][2];
+			lineTemp[3] = longverline[m][3];
+			for (n = 0; n<shortverline.size();)
+			{
+				if ((dist(longverline[m][0], longverline[m][1], longverline[m][2], longverline[m][3], (shortverline[n][0] + shortverline[n][2]) / 2, (shortverline[n][1] + shortverline[n][3]) / 2)<20) && !isVerWhite(lineTemp[1], lineTemp[3], shortverline[n][1], shortverline[n][3], rowsBlack))
+				{
+					if (shortverline[n][1] < shortverline[n][3])   //左边点在上
+					{
+
+						if (lineTemp[1] > shortverline[n][3])
+						{
+							if (abs(lineTemp[1] - shortverline[n][3]) > 10)
+							{
+								n++;
+								continue;
+							}
+						}
+						if (lineTemp[3] < shortverline[n][1])
+						{
+							if (abs(lineTemp[3] - shortverline[n][1]) > 10)
+							{
+								n++;
+								continue;
+							}
+						}
+						if (shortverline[n][0] < lineTemp[0])
+							lineTemp[0] = shortverline[n][0];
+						if (shortverline[n][1] < lineTemp[1])
+							lineTemp[1] = shortverline[n][1];
+						if (shortverline[n][2] < lineTemp[2])
+							lineTemp[2] = shortverline[n][2];
+						if (shortverline[n][3] > lineTemp[3])
+							lineTemp[3] = shortverline[n][3];
+					}
+					else   //左边点在下
+					{
+						if (lineTemp[1] > shortverline[n][1])
+						{
+							if (abs(lineTemp[1] - shortverline[n][1]) > 20)
+							{
+								n++;
+								continue;
+							}
+						}
+						if (lineTemp[3] < shortverline[n][3])
+						{
+							if (abs(lineTemp[3] - shortverline[n][3]) > 20)
+							{
+								n++;
+								continue;
+							}
+						}
+						if (shortverline[n][0] < lineTemp[0])
+							lineTemp[0] = shortverline[n][0];
+						if (shortverline[n][3] < lineTemp[1])
+							lineTemp[1] = shortverline[n][3];
+						if (shortverline[n][2] < lineTemp[2])
+							lineTemp[2] = shortverline[n][2];
+						if (shortverline[n][1] > lineTemp[3])
+							lineTemp[3] = shortverline[n][1];
+					}
+					shortverline.erase(shortverline.begin() + n); //删除longver[n]
+				}
+				else
+				{
+					n++;    //不需要拟合，直接跳过
+				}
+			}
+			longshortverline.push_back(lineTemp);
+			longverline.erase(longverline.begin());     //删除longver[m]
+		}
+		else  //左边点在下
+		{
+			lineTemp[0] = longverline[m][0];
+			lineTemp[1] = longverline[m][3];
+			lineTemp[2] = longverline[m][2];
+			lineTemp[3] = longverline[m][1];
+			for (n = 0; n<longverline.size();)
+			{
+				if (dist(longverline[m][0], longverline[m][1], longverline[m][2], longverline[m][3], (shortverline[n][0] + shortverline[n][2]) / 2, (shortverline[n][1] + shortverline[n][3]) / 2)<20 && !isVerWhite(lineTemp[1], lineTemp[3], shortverline[n][1], shortverline[n][3], rowsBlack))
+				{
+					if (shortverline[n][1] < shortverline[n][3])   //左边点在上
+					{
+						if (lineTemp[1] > shortverline[n][3])
+						{
+							if (abs(lineTemp[1] - shortverline[n][3]) > 20)
+							{
+								n++;
+								continue;
+							}
+						}
+						if (lineTemp[3] < shortverline[n][1])
+						{
+							if (abs(lineTemp[3] - shortverline[n][1]) > 20)
+							{
+								n++;
+								continue;
+							}
+						}
+						if (shortverline[n][0] < lineTemp[0])
+							lineTemp[0] = shortverline[n][0];
+						if (shortverline[n][1] < lineTemp[1])
+							lineTemp[1] = shortverline[n][1];
+						if (shortverline[n][2] < lineTemp[2])
+							lineTemp[2] = shortverline[n][2];
+						if (shortverline[n][3] > lineTemp[3])
+							lineTemp[3] = shortverline[n][3];
+					}
+					else   //左边点在下
+					{
+						if (lineTemp[1] > shortverline[n][1])
+						{
+							if (abs(lineTemp[1] - shortverline[n][1]) > 20)
+							{
+								n++;
+								continue;
+							}
+						}
+						if (lineTemp[3] < shortverline[n][3])
+						{
+							if (abs(lineTemp[3] - shortverline[n][3]) > 20)
+							{
+								n++;
+								continue;
+							}
+						}
+						if (shortverline[n][0] < lineTemp[0])
+							lineTemp[0] = shortverline[n][0];
+						if (shortverline[n][3] < lineTemp[1])
+							lineTemp[1] = shortverline[n][3];
+						if (shortverline[n][2] < lineTemp[2])
+							lineTemp[2] = shortverline[n][2];
+						if (shortverline[n][1] > lineTemp[3])
+							lineTemp[3] = shortverline[n][1];
+					}
+					shortverline.erase(shortverline.begin() + n); //删除longver[n]
+				}
+				else
+				{
+					n++;
+				}
+			}
+			longshortverline.push_back(lineTemp);
+			longverline.erase(longverline.begin());     //删除longver[m]
+		}
+	}
+	//第一次长和短垂直线拟合**********************************************
 	//打印长线和短线
-	for (m = 0; m < longline.size(); m++)
+	for (m = 0; m < longshortverline.size(); m++)
 	{
 		//Mat* temp = new Mat(imgShow.rows, imgShow.cols, CV_8UC3, cv::Scalar(255, 255, 255));
-		//cv::line(*temp, cv::Point(longline[m][0], longline[m][1]), cv::Point(longline[m][2], longline[m][3]), cv::Scalar(0, 0, 0), 1, CV_AA);
-		cv::line(shortlineimg, cv::Point(longline[m][0], longline[m][1]), cv::Point(longline[m][2], longline[m][3]), cv::Scalar(0, 0, 0), 1, CV_AA);
+		//cv::line(*temp, cv::Point(longverline[m][0], longverline[m][1]), cv::Point(longverline[m][2], longverline[m][3]), cv::Scalar(0, 0, 0), 1, CV_AA);
+		cv::line(longshortverlineimg, cv::Point(longshortverline[m][0], longshortverline[m][1]), cv::Point(longshortverline[m][2], longshortverline[m][3]), cv::Scalar(0, 0, 0), 1, CV_AA);
+		//imwrite("C:\\Users\\Mz\\Desktop\\垂直线集合\\"+to_string(m) + "ver.png", *temp, compression_params);
+
+	}
+	for (m = 0; m < shortverline.size(); m++)
+	{
+		//Mat* temp = new Mat(imgShow.rows, imgShow.cols, CV_8UC3, cv::Scalar(255, 255, 255));
+		//cv::line(*temp, cv::Point(longverline[m][0], longverline[m][1]), cv::Point(longverline[m][2], longverline[m][3]), cv::Scalar(0, 0, 0), 1, CV_AA);
+		cv::line(longshortverlineimg, cv::Point(shortverline[m][0], shortverline[m][1]), cv::Point(shortverline[m][2], shortverline[m][3]), cv::Scalar(0, 0, 0), 1, CV_AA);
 		//imwrite("C:\\Users\\Mz\\Desktop\\垂直线集合\\"+to_string(m) + "ver.png", *temp, compression_params);
 	}
 	namedWindow("long and short", 2);
-	imshow("long and short", shortlineimg);
-	imwrite(path + "long and short.png", shortlineimg, compression_params);
+	imshow("long and short", longshortverlineimg);
+	imwrite(path + "long and short.png", longshortverlineimg, compression_params);
 
 
 
 
 	printf("hor:%d %d,ver:%d %d\n", numb1, numb11, numb2, numb22);
-	printf("longline：%d\n", longline.size());
+	printf("longverline：%d\n", longverline.size());
+	printf("allverlinenumber：%d\n", shortverline.size() + longshortverline.size());
 	namedWindow("hor", 2);
 	imshow("hor", horImg);
 	imwrite(path + "hor.png", horImg, compression_params);
@@ -740,6 +942,7 @@ void main()
 	}
 	else  //三点共线
 	{
+
 	}
 	}
 	}
