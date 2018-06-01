@@ -230,7 +230,7 @@ void main()
 	string path = "C:\\Users\\Mz\\Desktop\\";
 	//cv::Mat img = imread("C:\\Users\\Mz\\Desktop\\框线检测\\Indoor\\1.jpg", 2 );
 	cv::Mat img = imread("C:\\Users\\Mz\\Desktop\\框线数据集\\001-人寿保险投保单-V3\\000001.tif", 1);
-	resize(img, img, Size(img.cols / 2.2, img.rows / 2.5), 0, 0, INTER_LANCZOS4);
+	resize(img, img, Size(img.cols /2.2, img.rows / 2.5), 0, 0, INTER_LANCZOS4);
 	//Laplacian(img, img, CV_8U, 3);
 	//namedWindow("forign", 2);
 	//imshow("forign", img);
@@ -373,7 +373,7 @@ void main()
 		lineTemp[1] = ver[m][1];
 		lineTemp[2] = ver[m][2];
 		lineTemp[3] = ver[m][3];
-		if (sqrt((ver[m][0] - ver[m][2])*(ver[m][0] - ver[m][2]) + (ver[m][1] - ver[m][3])*(ver[m][1] - ver[m][3])) < 50)
+		if (sqrt((ver[m][0] - ver[m][2])*(ver[m][0] - ver[m][2]) + (ver[m][1] - ver[m][3])*(ver[m][1] - ver[m][3])) < 100)
 		{
 			shortver.push_back(lineTemp);
 			continue;
@@ -467,12 +467,26 @@ void main()
 			lineTemp[3] = longver[m][3];
 			for (n = m + 1; n<longver.size();)
 			{
-				if ((dist(longver[m][0], longver[m][1], longver[m][2], longver[m][3], (longver[n][0] + longver[n][2]) / 2, (longver[n][1] + longver[n][3]) / 2)<20) && !isVerWhite(lineTemp[1], lineTemp[3], longver[n][1], longver[n][3], rowsBlack))
+				if ((dist(longver[m][0], longver[m][1], longver[m][2], longver[m][3], (longver[n][0] + longver[n][2]) / 2, (longver[n][1] + longver[n][3]) / 2)<10) && !isVerWhite(lineTemp[1], lineTemp[3], longver[n][1], longver[n][3], rowsBlack))
 				{
-					if (longver[n][0] < (img.cols / 2))
-					{
 						if (longver[n][1] < longver[n][3])   //左边点在上
 						{
+							if (lineTemp[1] > longver[n][3])
+							{
+								if (abs(lineTemp[1] - longver[n][3]) > 10)
+								{
+									n++;
+									continue;
+								}
+							}
+							if (lineTemp[3] < longver[n][1])
+							{
+								if (abs(lineTemp[3] - longver[n][1]) > 10)
+								{
+									n++;
+									continue;
+								}
+							}
 							if (longver[n][0] < lineTemp[0])
 								lineTemp[0] = longver[n][0];
 							if (longver[n][1] < lineTemp[1])
@@ -484,6 +498,22 @@ void main()
 						}
 						else   //左边点在下
 						{
+							if (lineTemp[1] > longver[n][1])
+							{
+								if (abs(lineTemp[1] - longver[n][1]) > 20)
+								{
+									n++;
+									continue;
+								}
+							}
+							if (lineTemp[3] < longver[n][3])
+							{
+								if (abs(lineTemp[3] - longver[n][3]) > 20)
+								{
+									n++;
+									continue;
+								}
+							}
 							if (longver[n][0] < lineTemp[0])
 								lineTemp[0] = longver[n][0];
 							if (longver[n][3] < lineTemp[1])
@@ -494,33 +524,6 @@ void main()
 								lineTemp[3] = longver[n][1];
 						}
 						longver.erase(longver.begin() + n); //删除longver[n]
-					}
-					else
-					{
-						if (longver[n][1] < longver[n][3])   //左边点在上
-						{
-							if (longver[n][0] > lineTemp[0])
-								lineTemp[0] = longver[n][0];
-							if (longver[n][1] < lineTemp[1])
-								lineTemp[1] = longver[n][1];
-							if (longver[n][2] > lineTemp[2])
-								lineTemp[2] = longver[n][2];
-							if (longver[n][3] > lineTemp[3])
-								lineTemp[3] = longver[n][3];
-						}
-						else   //左边点在下
-						{
-							if (longver[n][0] > lineTemp[0])
-								lineTemp[0] = longver[n][0];
-							if (longver[n][3] < lineTemp[1])
-								lineTemp[1] = longver[n][3];
-							if (longver[n][2] > lineTemp[2])
-								lineTemp[2] = longver[n][2];
-							if (longver[n][1] > lineTemp[3])
-								lineTemp[3] = longver[n][1];
-						}
-						longver.erase(longver.begin() + n); //删除longver[n]
-					}
 				}
 				else
 				{
@@ -538,10 +541,26 @@ void main()
 			lineTemp[3] = longver[m][1];
 			for (n = m + 1; n<longver.size();)
 			{
-				if (dist(longver[m][0], longver[m][1], longver[m][2], longver[m][3], (longver[n][0] + longver[n][2]) / 2, (longver[n][1] + longver[n][3]) / 2)<20 && !isVerWhite(lineTemp[1], lineTemp[3], longver[n][1], longver[n][3], rowsBlack))
+				if (dist(longver[m][0], longver[m][1], longver[m][2], longver[m][3], (longver[n][0] + longver[n][2]) / 2, (longver[n][1] + longver[n][3]) / 2)<10 && !isVerWhite(lineTemp[1], lineTemp[3], longver[n][1], longver[n][3], rowsBlack))
 				{
 					if (longver[n][1] < longver[n][3])   //左边点在上
 					{
+						if (lineTemp[1] > longver[n][3])
+						{
+							if (abs(lineTemp[1] - longver[n][3]) > 20)
+							{
+								n++;
+								continue;
+							}
+						}
+						if (lineTemp[3] < longver[n][1])
+						{
+							if (abs(lineTemp[3] - longver[n][1]) > 20)
+							{
+								n++;
+								continue;
+							}
+						}
 						if (longver[n][0] < lineTemp[0])
 							lineTemp[0] = longver[n][0];
 						if (longver[n][1] < lineTemp[1])
@@ -553,6 +572,22 @@ void main()
 					}
 					else   //左边点在下
 					{
+						if (lineTemp[1] > longver[n][1])
+						{
+							if (abs(lineTemp[1] - longver[n][1]) > 20)
+							{
+								n++;
+								continue;
+							}
+						}
+						if (lineTemp[3] < longver[n][3])
+						{
+							if (abs(lineTemp[3] - longver[n][3]) > 20)
+							{
+								n++;
+								continue;
+							}
+						}
 						if (longver[n][0] < lineTemp[0])
 							lineTemp[0] = longver[n][0];
 						if (longver[n][3] < lineTemp[1])
@@ -586,7 +621,7 @@ void main()
 			lineTemp[3] = shortver[m][3];
 			for (n = m + 1; n<shortver.size();)
 			{
-				if ((dist(shortver[m][0], shortver[m][1], shortver[m][2], shortver[m][3], (shortver[n][0] + shortver[n][2]) / 2, (shortver[n][1] + shortver[n][3]) / 2)<20) && !isVerWhite(lineTemp[1], lineTemp[3], shortver[n][1], shortver[n][3], rowsBlack))
+				if ((dist(shortver[m][0], shortver[m][1], shortver[m][2], shortver[m][3], (shortver[n][0] + shortver[n][2]) / 2, (shortver[n][1] + shortver[n][3]) / 2)<10) && !isVerWhite(lineTemp[1], lineTemp[3], shortver[n][1], shortver[n][3], rowsBlack))
 				{
 					if (shortver[n][1] < shortver[n][3])   //左边点在上
 					{
@@ -661,7 +696,7 @@ void main()
 			lineTemp[3] = shortver[m][1];
 			for (n = m + 1; n<shortver.size();)
 			{
-				if (dist(shortver[m][0], shortver[m][1], shortver[m][2], shortver[m][3], (shortver[n][0] + shortver[n][2]) / 2, (shortver[n][1] + shortver[n][3]) / 2)<20 && !isVerWhite(lineTemp[1], lineTemp[3], shortver[n][1], shortver[n][3], rowsBlack))
+				if (dist(shortver[m][0], shortver[m][1], shortver[m][2], shortver[m][3], (shortver[n][0] + shortver[n][2]) / 2, (shortver[n][1] + shortver[n][3]) / 2)<10 && !isVerWhite(lineTemp[1], lineTemp[3], shortver[n][1], shortver[n][3], rowsBlack))
 				{
 					if (shortver[n][1] < shortver[n][3])   //左边点在上
 					{
