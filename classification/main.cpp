@@ -407,7 +407,7 @@ void main()
 			lineTemp[1] = hor[m][1];
 			lineTemp[2] = hor[m][2];
 			lineTemp[3] = hor[m][3];
-			for (n = m + 1; m < hor.size();)
+			for (n = m + 1; n < hor.size();)
 			{
 				if ((dist(hor[m][0], hor[m][1], hor[m][2], hor[m][3], (hor[n][0] + hor[n][2]) / 2, (hor[n][1] + hor[n][3]) / 2) < 10))
 				{
@@ -929,55 +929,18 @@ void main()
 	imwrite(path + "long and short.png", longshortverlineimg, compression_params);
 	printf("longverline：%d\n", longverline.size());
 	printf("allverlinenumber：%d\n", shortverline.size() + longshortverline.size());
-	for (m = 0; m < longver.size(); m++)
+	
+	//拟合好后的水平线和垂线进行合并
+	for (m = 0; m < allhor.size(); m++)
 	{
+		cv::line(longshortverlineimg, cv::Point(allhor[m][0], allhor[m][1]), cv::Point(allhor[m][2], allhor[m][3]), cv::Scalar(0, 0, 0), 1, CV_AA);
+	}
+	namedWindow("all line", 2);
+	imshow("all line", longshortverlineimg);
+	imwrite(path + "all line.png", longshortverlineimg, compression_params);
+	printf("all line number：%d\n", shortverline.size() + longshortverline.size()+allhor.size());
+	//拟合好后的水平线和垂线进行合并
 
-	}
-	/*for (it1=ver.begin(),m=0; it1!= ver.end();it1++,m++)
-	{
-	lineTemp[0] = 9999;
-	lineTemp[1] = 9999;
-	lineTemp[2] =9999;
-	lineTemp[3] =9999;
-	for (it2 = ver.begin(),n=0; it2 != ver.end(); it2++,n++)
-	{
-	if (it1 == it2)
-	continue;
-	if (equ(it1[m][0], it1[m][1], it1[m][2], it1[m][3], it2[n][0], it2[n][1]))       //共线情况(隐藏共点)
-	{
-	if (equ(it1[m][0], it1[m][1], it1[m][2], it1[m][3], it2[n][2], it2[n][3]))   //四点共线
-	{
-	//ver.erase(it1);   这个操作放到最后来
-	ver.erase(it2);
-	if(it1[m][0]<=it2[n][0])
-	{
-	lineTemp[0] = it1[m][0];
-	lineTemp[1] = it1[m][1];
-	}
-	else
-	{
-	lineTemp[0] = it2[m][0];
-	lineTemp[1] = it2[m][1];
-	}
-	if (it1[m][2] <= it2[n][2])
-	{
-	lineTemp[2] = it1[n][2];
-	lineTemp[3] = it1[n][3];
-	}
-	else
-	{
-	lineTemp[2] = it2[n][2];
-	lineTemp[3] = it2[n][3];
-	}
-	}
-	else  //三点共线
-	{
-
-	}
-	}
-	}
-	}
-	*/
 	namedWindow("final", 2);
 	imshow("final", finalImg);
 	imwrite(path + "final.png", finalImg, compression_params);
