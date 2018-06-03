@@ -473,7 +473,7 @@ void main()
 						{
 							if (lineTemp[1] > longver[n][3])
 							{
-								if (abs(lineTemp[1] - longver[n][3]) > 10)
+								if (abs(lineTemp[1] - longver[n][3]) > 20)
 								{
 									n++;
 									continue;
@@ -481,7 +481,7 @@ void main()
 							}
 							if (lineTemp[3] < longver[n][1])
 							{
-								if (abs(lineTemp[3] - longver[n][1]) > 10)
+								if (abs(lineTemp[3] - longver[n][1]) > 20)
 								{
 									n++;
 									continue;
@@ -628,7 +628,7 @@ void main()
 
 						if (lineTemp[1] > shortver[n][3])
 						{
-							if (abs(lineTemp[1] - shortver[n][3]) > 10)
+							if (abs(lineTemp[1] - shortver[n][3]) > 20)
 							{
 								n++;
 								continue;
@@ -636,7 +636,7 @@ void main()
 						}
 						if (lineTemp[3] < shortver[n][1])
 						{
-							if (abs(lineTemp[3] - shortver[n][1]) > 10)
+							if (abs(lineTemp[3] - shortver[n][1]) > 20)
 							{
 								n++;
 								continue;
