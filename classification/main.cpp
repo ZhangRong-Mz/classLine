@@ -24,7 +24,7 @@ void pre(Mat &img)
 	vector<vector<Point>> contours1;
 	findContours(bw, contours1, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_NONE);
 	drawContours(bw, contours1, -1, Scalar(255, 255, 255));
-	printf("%d\n", contours1.size());
+	//printf("%d\n", contours1.size());
 	//namedWindow("draw", 2);
 	//imshow("draw", bw);
 	//使用二值化后的图像来获取表格横纵的线
@@ -63,7 +63,6 @@ void pre(Mat &img)
 	vector<Rect> boundRect(contours2.size());
 	vector<Mat> rois;
 
-	cv::waitKey(0);
 }
 float haiLun(float x1, float y1, float x2, float y2, float x3, float y3)
 {
@@ -129,13 +128,13 @@ Mat VerticalProjection(Mat srcImage, int *&colsBlack)//垂直积分投影
 			histogramImage.at<uchar>(srcImage.rows - 1 - j, i) = value;
 		}
 	namedWindow("垂直积分投影图", 2);
-	imshow("垂直积分投影图", histogramImage);
-	imwrite("C:\\Users\\Mz\\Desktop\\垂直投影.png", histogramImage, compression_params);
+	//imshow("垂直积分投影图", histogramImage);
+	//imwrite("C:\\Users\\Mz\\Desktop\\垂直投影.png", histogramImage, compression_params);
 	return histogramImage;
 }
 Mat HorizonProjection(Mat srcImage, int *rowswidth)//水平积分投影  
 {
-	printf("rows is %d\n", srcImage.rows);
+	//printf("rows is %d\n", srcImage.rows);
 	vector<int> compression_params;
 	compression_params.push_back(CV_IMWRITE_PNG_COMPRESSION); //PNG格式图片的压缩级别  
 	compression_params.push_back(9);  //这里设置保存的图像质量级别
@@ -172,8 +171,8 @@ Mat HorizonProjection(Mat srcImage, int *rowswidth)//水平积分投影
 			histogramImage.at<uchar>(i, j) = value;
 		}
 	namedWindow("水平积分投影图", 2);
-	imshow("水平积分投影图", histogramImage);
-	imwrite("C:\\Users\\Mz\\Desktop\\水平投影.png", histogramImage, compression_params);
+	//imshow("水平积分投影图", histogramImage);
+	//imwrite("C:\\Users\\Mz\\Desktop\\水平投影.png", histogramImage, compression_params);
 	return histogramImage;
 }
 bool isVerWhite(float y1, float y2, float y3, float y4, int *p)
@@ -194,20 +193,16 @@ bool isVerWhite(float y1, float y2, float y3, float y4, int *p)
 	}
 	if (p1 > p4)
 	{
-		//printf("AAAAAAAAAAAAAAAAAAAAAAA\n p1:%d p4:%d\n",p1,p4);
 		for (int m = p4; m <= p1; m++)
 		{
-			//printf("%d is %d\n",m, p[m]);
 			if (p[m] == 0)
 				return 1;
 		}
 	}
 	if (p2 < p3)
 	{
-		//printf("BBBBBBBBBBBBBBBBBBBBBB p2:%d p3:%d\n",p2,p3);
 		for (int m = p2; m <= p3; m++)
 		{
-			//printf("%d is %d\n",m, p[m]);
 			if (p[m] == 0)
 				return 1;
 		}
@@ -270,16 +265,19 @@ void main()
 	vector<string>::iterator it;
 	cout << fileNameStr.size() << endl;
 	string keepPath;
-	int seq = 1;
-	for (it = fileNameStr.begin(); it != fileNameStr.end(); it++, seq++)
+	/*for (it = fileNameStr.begin(); it != fileNameStr.end(); it++)
 	{
-		if (GetFileAttributes((*it).c_str()) == FILE_ATTRIBUTE_DIRECTORY)
+	cout << *it << endl;
+	}*/
+	for (it = fileNameStr.begin(); it != fileNameStr.end(); it++)
+	{
+		if (GetFileAttributes((*it).c_str()) == 16|| GetFileAttributes((*it).c_str()) == 48)
 		{
 			keepPath = (*it).c_str();
 		}
 		else
 		{
-			img = imread(*it, 1);
+			img = imread(*it,4);
 			printf("row is %d cols is %d\n", img.rows, img.cols);
 			resize(img, img, Size(img.cols / 2.2, img.rows / 2.5), 0, 0, INTER_LANCZOS4);       //多尺度缩放
 																								//Laplacian(img, img, CV_8U, 3);
@@ -292,7 +290,7 @@ void main()
 
 			// cannyline show
 			cv::Mat imgShow(img.rows, img.cols, CV_8UC3, cv::Scalar(255, 255, 255));
-			printf("%d\n", lines1.size());
+			//printf("%d\n", lines1.size());
 			for (int m = 0; m<lines1.size(); ++m)
 			{
 				cv::line(imgShow, cv::Point(lines1[m][0], lines1[m][1]), cv::Point(lines1[m][2], lines1[m][3]), cv::Scalar(0, 0, 0), 1, CV_AA);
@@ -301,7 +299,7 @@ void main()
 			//imshow("1", imgShow);
 			pre(imgShow);
 			namedWindow("line segment", 4);
-			imshow("line segment", imgShow);
+			//imshow("line segment", imgShow);
 			vector<vector<Point>> contours;
 			vector<Vec4i> hierarchy;
 			findContours(imgShow, contours, hierarchy, CV_RETR_CCOMP, CV_CHAIN_APPROX_NONE);
@@ -319,7 +317,7 @@ void main()
 			namedWindow("ff", 2);
 			imshow("ff", fImg);
 			imwrite(path + "test.png", fImg, compression_params);*/
-			printf("%d\n", contours.size());
+			//printf("%d\n", contours.size());
 
 
 			//框线建模部分***************************************************************************框线建模部分
@@ -335,8 +333,11 @@ void main()
 			std::vector<std::vector<float> > longshortverline;
 			std::vector<std::vector<float> > ::iterator it1;
 			std::vector<std::vector<float> > ::iterator it2;
-			detector2.cannyLine(imgShow, lines2);
-			printf("%d\n", lines2.size());
+			if (contours.size() > 0)
+			{
+				detector2.cannyLine(imgShow, lines2);
+			}
+			//printf("%d\n", lines2.size());
 			cv::Mat finalImg(imgShow.rows, imgShow.cols, CV_8UC3, cv::Scalar(255, 255, 255));
 			cv::Mat horImg(imgShow.rows, imgShow.cols, CV_8UC3, cv::Scalar(255, 255, 255));
 			cv::Mat allhorImg(imgShow.rows, imgShow.cols, CV_8UC3, cv::Scalar(255, 255, 255));
@@ -447,10 +448,10 @@ void main()
 				cv::line(horImg, cv::Point(hor[k][0], hor[k][1]), cv::Point(hor[k][2], hor[k][3]), cv::Scalar(0, 0, 0), 1, CV_AA);
 			}
 			namedWindow("hor", 2);
-			imshow("hor", horImg);
-			imwrite(path + "hor.png", horImg, compression_params);
+			//imshow("hor", horImg);
+			//imwrite(path + "hor.png", horImg, compression_params);
 
-			printf("hor:%d %d,ver:%d %d\n", numb1, numb11, numb2, numb22);
+			//printf("hor:%d %d,ver:%d %d\n", numb1, numb11, numb2, numb22);
 			//第一次水平直线拟合**********************************************
 			for (m = 0; m<hor.size();)
 			{
@@ -503,10 +504,10 @@ void main()
 				cv::line(allhorImg, cv::Point(allhor[k][0], allhor[k][1]), cv::Point(allhor[k][2], allhor[k][3]), cv::Scalar(0, 0, 0), 1, CV_AA);
 			}
 			namedWindow("allhor", 2);
-			imshow("allhor", allhorImg);
-			imwrite(path + "allhor.png", allhorImg, compression_params);
+			//imshow("allhor", allhorImg);
+			//imwrite(path + "allhor.png", allhorImg, compression_params);
 
-			printf("allhor is %d\n", allhor.size());
+			//printf("allhor is %d\n", allhor.size());
 			//第一次长垂直线拟合**********************************************
 			for (m = 0; m<longver.size();)
 			{
@@ -825,8 +826,8 @@ void main()
 				//imwrite("C:\\Users\\Mz\\Desktop\\垂直线集合\\"+to_string(m) + "ver.png", *temp, compression_params);
 			}
 			namedWindow("longverline", 2);
-			imshow("longverline", longverlineimg);
-			imwrite(path + "longverline.png", longverlineimg, compression_params);
+			//imshow("longverline", longverlineimg);
+			//imwrite(path + "longverline.png", longverlineimg, compression_params);
 			//打印短垂线
 			for (m = 0; m < shortverline.size(); m++)
 			{
@@ -836,8 +837,8 @@ void main()
 				//imwrite("C:\\Users\\Mz\\Desktop\\垂直线集合\\"+to_string(m) + "ver.png", *temp, compression_params);
 			}
 			namedWindow("shortverline", 2);
-			imshow("shortverline", shortverlineimg);
-			imwrite(path + "shortverline.png", shortverlineimg, compression_params);
+			//imshow("shortverline", shortverlineimg);
+			//imwrite(path + "shortverline.png", shortverlineimg, compression_params);
 
 
 			//第一次长和短垂直线拟合**********************************************
@@ -1011,10 +1012,10 @@ void main()
 				//imwrite("C:\\Users\\Mz\\Desktop\\垂直线集合\\"+to_string(m) + "ver.png", *temp, compression_params);
 			}
 			namedWindow("long and short", 2);
-			imshow("long and short", longshortverlineimg);
-			imwrite(path + "long and short.png", longshortverlineimg, compression_params);
-			printf("longverline：%d\n", longverline.size());
-			printf("allverlinenumber：%d\n", shortverline.size() + longshortverline.size());
+			//imshow("long and short", longshortverlineimg);
+			//imwrite(path + "long and short.png", longshortverlineimg, compression_params);
+			//printf("longverline：%d\n", longverline.size());
+			//printf("allverlinenumber：%d\n", shortverline.size() + longshortverline.size());
 
 			//拟合好后的水平线和垂线进行合并
 			for (m = 0; m < allhor.size(); m++)
@@ -1022,13 +1023,13 @@ void main()
 				cv::line(longshortverlineimg, cv::Point(allhor[m][0], allhor[m][1]), cv::Point(allhor[m][2], allhor[m][3]), cv::Scalar(0, 0, 0), 1, CV_AA);
 			}
 			namedWindow("all line", 2);
-			imshow("all line", longshortverlineimg);
-			imwrite(path + "all line.png", longshortverlineimg, compression_params);
+			//imshow("all line", longshortverlineimg);
+			//imwrite(path + "all line.png", longshortverlineimg, compression_params);
 			printf("all line number：%d\n", shortverline.size() + longshortverline.size() + allhor.size());
 			//拟合好后的水平线和垂线进行合并
 
 			namedWindow("final", 2);
-			imshow("final", finalImg);
+			//imshow("final", finalImg);
 			filename = (*it).substr(keepPath.length() + 1, (*it).length() - keepPath.length());
 			forward = "";
 			for (int v = 0; v < filename.length(); v++)
@@ -1040,9 +1041,8 @@ void main()
 				forward += filename[v];
 			}
 			imwrite(keepPath + "\\" + forward + "框线检测" + ".tif", finalImg, compression_params);
-			cv::waitKey(0);
 		}
+		cout << endl << endl << endl;
 	}
-
-
+	system("pause");
 }

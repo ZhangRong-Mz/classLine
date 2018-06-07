@@ -430,7 +430,7 @@ int MetaLine::crossSearch(Point2i pts,float &angle,int ID)
 				y = ySeed + Y_OFFSET[i];
 				if ((0 <= y) && (y < rows))
 				{
-					cout<<ptrMI[y*cols+x]<<endl;
+					cout<<"ptrMI[y*cols+x] is:"<<ptrMI[y*cols+x]<<endl;
 					if (ptrMI[y*cols+x]<0&&ptrMI[y*cols+x]!=ID) return -1; //-1 for stop merging
 
 					if (ptrMI[y*cols+x]==1)
@@ -1408,9 +1408,10 @@ void MetaLine::MetaLineDetection(cv::Mat originalImage,float gausSigma, int gaus
 	getMetaLine(segments,metaLines,sigma);
 
 	//meta line extending
+	cout <<"metaLines.size is：" <<metaLines.size()<<endl;
 	int *removal=(int *)malloc(metaLines.size()*sizeof(int));
 	memset(removal,0,metaLines.size()*sizeof(int));
-    metaLineExtending(metaLines,removal);
+    metaLineExtending(metaLines,removal);  //这一步，如果图片没有线的话报错
 
 	//meta line merging
 	//metaLineMerging(metaLines,removal);
@@ -1729,7 +1730,7 @@ void MetaLine::metaLineExtending(lines_list_t &metaLines,int *removal)
 {
 	int i,j,m,n;
 	int num=metaLines.size();
-
+	cout << "metaLines is" << num << endl;
 	//sort lines
 	std::vector<int> length;
 	std::vector<int> index;
@@ -1741,8 +1742,11 @@ void MetaLine::metaLineExtending(lines_list_t &metaLines,int *removal)
 			length.push_back(metaLines[i].points.size());
 		}
 	}
-	QuickSort<int,int>::SortDescent(&length[0], 0, length.size()-1, &index[0]);
-
+	cout <<"length.size is:"<< length.size()<<endl;
+	if (length.size() > 0)
+	{
+		QuickSort<int, int>::SortDescent(&length[0], 0, length.size() - 1, &index[0]);
+	}
 	for (i=0;i<length.size();++i)
 	{
 		int t=index[i];
